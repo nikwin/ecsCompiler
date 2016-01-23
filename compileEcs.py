@@ -106,7 +106,7 @@ def parseToken(token, key):
         return int(token)
     if token[0] == '[':
         st = token[1:-1]
-        return '[{0}]'.format(', '.join(parseToken(s.strip(), key) for s in st.split(',')))  if st else '[]'
+        return '[{0}]'.format(', '.join(str(parseToken(s.strip(), key)) for s in st.split(',')))  if st else '[]'
 
     if token[0] == '?':
         return '(args["{0}"] === undefined) ? {1} : args["{0}"]'.format(key, parseToken(token[1:], key))

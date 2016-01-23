@@ -1,0 +1,32 @@
+#
+/*
+- Everything in between # lines is inserted directly into the generated javascript file
+
+- You can specify a property of a component with propertyName: argName
+- If argName and propertyName are the same, then the argName can be omitted
+- If a number is specified instead of argName, that property will be set to the number
+- You can specify a list by enclosing the arguments with square brackets. Each of the tokens in the list will be parsed normally
+- You can refer to another ecs component by using its name followed by ()
+- If the propertyName and ecs component's name are the same, you can then omit the name
+- If you want to set a default value, put a ? before the token and the rest of the token will be parsed normally.
+- If you want to put in a value exactly as you write it, put a # before the token and it will not be parsed at all
+
+The csv used for parameters for this component are in exampleComponent.csv
+Lists are specified in a csv by val1|val2|val3...
+Dictionaries are specified by key1:val1|key2:val2...
+In both cases, a val can be a list or a dictionary as well as a primitive.
+Those are specified by using the above syntax wrapped in () where a val would be used.
+
+- Run python compileEcs.py > ecs.js
+from the root folder and then open ecs.js to see the compiled version
+*/
+#
+
+field: field
+otherField:
+numField: 3
+lstField: [3, lstArg]
+basicComponent: basicComponent()
+basicExample: ()
+defaultField: ?3
+objField: #{}

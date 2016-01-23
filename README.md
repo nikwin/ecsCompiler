@@ -7,4 +7,4 @@ The structure of the entities and the components are defined in .ecs files and p
 
 This compiles to javascript right now, but can be extended to compile to JSON instead fairly easily.
 
-Examples are in the examples folder.
+Examples are in the ecs folder.
