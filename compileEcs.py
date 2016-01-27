@@ -13,7 +13,7 @@ def indent(definition, baseIndent):
     return definition
 
 def defaultArgDefinition(key):
-    return """updateArgs(args, allArgs.{0});""".format(key)
+    return """updateArgs(args, JSON.parse(JSON.stringify(allArgs.{0})));""".format(key)
 
 class Ecs(object):
     def __init__(self, ecs, inherits, commandHolders):
