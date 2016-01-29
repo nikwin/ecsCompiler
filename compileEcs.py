@@ -164,8 +164,11 @@ def compileEcs():
                             commandHolders[group] = {}
                         commandHolders[group][key] = val
                 else:
-                    mat = re.match('(\w+): ?(.*)', lin)
-                    key, val = mat.groups()
+                    try:
+                        mat = re.match('(\w+): ?(.*)', lin)
+                        key, val = mat.groups()
+                    except AttributeError:
+                        raise AttributeError(lin)
                     val = val if val else key
                     ecs[key] = parseToken(val, key)
                         
@@ -210,6 +213,15 @@ var ecs = {{
 {quotedLines}
 
 var csvIdentifiers = {csvIdentifiers}
+
+var findKeyFor = function(csvId, key, val){{
+    return _.chain(csvIdentifiers[csvId])
+    .filter(function(argKey){{
+        return (allArgs[argKey][key] == val);
+    }})
+    .first()
+    .value();
+}};
 
 var updateArgs = function(args, defaultArgs){{
     _.each(defaultArgs, function(val, key){{
