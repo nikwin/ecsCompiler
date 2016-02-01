@@ -102,8 +102,10 @@ def parseToken(token, key):
         return token[1:]
     if token == '()':
         return makeEcsRef(key)
-    if token.isdigit():
+    try:
         return int(token)
+    except ValueError:
+        pass
     if token[0] == '[':
         st = token[1:-1]
         return '[{0}]'.format(', '.join(str(parseToken(s.strip(), key)) for s in st.split(',')))  if st else '[]'
