@@ -200,13 +200,18 @@ def compileEcs():
                 csvKeys.append(key)
         csvIdentifiers[fil] = csvKeys
 
+    parameters = rawEcs['PARAMETERS'].commandHolders['arg']
+    del rawEcs['PARAMETERS']
+
     allArgs = { key: raw.getArg() for key, raw in rawEcs.iteritems() if raw.getArg() }
     allEcs = { key: raw.makeFunction(key, '    ') for key, raw in rawEcs.iteritems() }
 
     ecsList = ',\n'.join('    {0}: {1}'.format(key, val) for key, val in allEcs.iteritems())
     
                  
-    ecsDefinition = """var allArgs = {allArgs};
+    ecsDefinition = """var PARAMETERS = {parameters};
+
+var allArgs = {allArgs};
 
 var ecs = {{
 {ecsList}
@@ -247,7 +252,11 @@ var makeAllEcs = function(csvId){{
         return makeEcs(key, {{}});
     }});
 }};
-""".format(allArgs=json.dumps(allArgs, indent=4), ecsList=ecsList, quotedLines=''.join(quotedLines), csvIdentifiers=json.dumps(csvIdentifiers, indent=4))
+""".format(parameters=json.dumps(parameters, indent=4),
+           allArgs=json.dumps(allArgs, indent=4), 
+           ecsList=ecsList, 
+           quotedLines=''.join(quotedLines), 
+           csvIdentifiers=json.dumps(csvIdentifiers, indent=4))
     print ecsDefinition
         
 compileEcs()
