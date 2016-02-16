@@ -119,6 +119,9 @@ def parseToken(token, key):
     if token[0] == '?':
         return '(args["{0}"] === undefined) ? {1} : args["{0}"]'.format(key, parseToken(token[1:], key))
 
+    if token[0] == '"':
+        return token
+
     mat = re.match('(.+)\(\)', token)
     if mat:
         return makeEcsRef(mat.group(1))
