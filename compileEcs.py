@@ -102,6 +102,8 @@ def parseToken(token, key):
         return token[1:]
     if token == '()':
         return makeEcsRef(key)
+    if token in ['true', 'false']:
+        return token
     try:
         return int(token)
     except ValueError:
