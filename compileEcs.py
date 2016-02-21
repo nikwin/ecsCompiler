@@ -119,7 +119,13 @@ def parseToken(token, key):
         return '[{0}]'.format(', '.join(str(parseToken(s.strip(), key)) for s in st.split(',')))  if st else '[]'
 
     if token[0] == '?':
-        return '(args["{0}"] === undefined) ? {1} : args["{0}"]'.format(key, parseToken(token[1:], key))
+        token = token[1:]
+        mat = re.match('\((.+)\) (.*)', token)
+        if mat:
+            condition, token = mat.groups()
+            return '({0}) ? {1} : undefined'.format(condition, parseToken(token, key))
+        else:
+            return '(args["{0}"] === undefined) ? {1} : args["{0}"]'.format(key, parseToken(token, key))
 
     if token[0] == '"':
         return token
