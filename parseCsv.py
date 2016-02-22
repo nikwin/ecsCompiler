@@ -5,8 +5,12 @@ def parseCsvToken(st):
         return None
     num = pp.Combine(pp.Optional('-') + pp.Word(pp.nums))
     num.setParseAction(lambda toks: int(toks[0]))
+
+    floatNum = pp.Combine(pp.Optional('-') + pp.Word(pp.nums) + '.' + pp.Word(pp.nums))
+    floatNum.setParseAction(lambda toks: float(toks[0]))
+    
     identifier = pp.Word(pp.alphanums + ' ')
-    basicToken = num ^ identifier
+    basicToken = num ^ floatNum ^ identifier
 
     lst = pp.Forward()    
     dct = pp.Forward()
@@ -42,7 +46,7 @@ def parseCsvToken(st):
     return simplify(parseResult[0], False)
 
 def simplify(parseResult, index):
-    if type(parseResult) == str or type(parseResult) == int or type(parseResult) == dict or type(parseResult) == list:
+    if type(parseResult) in [str, int, float, dict, list]:
         return parseResult
     else:
         return parseResult.asList()[0] if index else parseResult.asList()
@@ -51,6 +55,7 @@ if __name__ == '__main__':
     assert(parseCsvToken('') == None)
     assert(parseCsvToken('12') == 12)
     assert(parseCsvToken('-3') == -3)
+    assert(parseCsvToken('0.5') == 0.5)
     assert(parseCsvToken('abc') == 'abc')
     assert(parseCsvToken('abc|') == ['abc'])
     assert(parseCsvToken('abc|12|sxy') == ['abc', 12, 'sxy'])
