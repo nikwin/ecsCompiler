@@ -1,0 +1,35 @@
+* ECS Debt
+** DONE Support components that only are made if a certain param exists.
+** DONE Global parameter files. 1/1
+** DONE Support extending the arrays of parent classes in an ecs file
+** Add support for a step to process the csv files
+   - Minimize the towerbutton file from that
+   - Also towerSource
+** Write a check to ensure uniqueness of keys
+   - Also list the pieces that are not referenced by other pieces
+   - Also uniqueness of defined functions would be nice.
+** Support adding arguments to the components in the ecs files
+   - ie; healthComponent(health=1)
+   - refactor the goal entity through that.
+   - This way we can have multiple of a component in an entity
+** Check to ensure that a value belongs to a certain class
+   - eg; check to make sure that sourceKey is actually a source
+** Similarly, support decorating the function of the parent class.
+** Check to make sure that all of the identifiers are used
+** Auto-generate csv columns from an ecs file
+   - support a dynamic keyword so that you can mark fields in the ecs file that should not show up in the csv
+** Define function signatures in base classes and ensure that derived classes use the same signature
+** Inline the args so that you don't have to deep clone them with json.
+   - On the other hand, this does let me change run time behaviour easily by updating the source args
+   - I really don't like that though
+** Support a shared reference so that all towers of a certain key can point to a single component
+** Look into making conditions more consistent.
+** Define necessary pieces for a component and return undefined if they are not present
+** Generate statistics
+   - The number of individual pieces
+   - Number of complex pieces
+** Show abstract base classes with only one child
+** Shortcut for text substitution as naming conventions are typically strict
+   - Alternately support for static checking naming conventions
+** [#C] Make the definitions in a file that are not the first be inaccessible outside that file
+** [#C] Make namespaces for the functions to reduce chance of overlap

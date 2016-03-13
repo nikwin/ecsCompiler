@@ -35,13 +35,24 @@ class Ecs(object):
                 for key, val in sdict.iteritems():
                     commandHolders[group][key] = val
         self.inherits = []
+
         for key, val in self.ecs.iteritems():
             ecs[key] = val
+
+        if 'extend' in self.commandHolders:
+            for key, val in self.commandHolders['extend'].iteritems():
+                try:
+                    ecs[key] = ecs[key] + '.concat(' + val + ')'
+                except KeyError:
+                    raise KeyError(key, val)
+        self.commandHolders['extend'] = {}
+                
         for group, sdict in self.commandHolders.iteritems():
             if group not in commandHolders:
                 commandHolders[group] = {}
             for key, val in sdict.iteritems():
                 commandHolders[group][key] = val
+
         self.ecs = ecs
         self.commandHolders = commandHolders
         return True
@@ -174,11 +185,17 @@ def compileEcs():
                     if group == 'inherit':
                         inherits.append(mat.group(2))
                     else:
-                        if group not in ['arg', 'derive', 'default', 'refer']:
+                        if group not in ['arg', 'derive', 'default', 'refer', 'extend']:
                             print 'incorrect instruction', fil
                         mat2 = re.match('(.+?) (.+)', mat.group(2))
                         key = mat2.group(1)
-                        val = parseCsvToken(mat2.group(2)) if (group == 'arg') else mat2.group(2)
+                        val = mat2.group(2)
+
+                        if group == 'arg':
+                            val = parseCsvToken(val)
+                        elif group == 'extend':
+                            val = parseToken(val, key)
+
                         if not group in commandHolders:
                             commandHolders[group] = {}
                         commandHolders[group][key] = val
