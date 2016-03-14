@@ -18,6 +18,8 @@
 ** Check to make sure that all of the identifiers are used
 ** Auto-generate csv columns from an ecs file
    - support a dynamic keyword so that you can mark fields in the ecs file that should not show up in the csv
+   - Also try the other way around - generate the ecs file from the csv by figuring out columns and put all new columns into a new component
+   - Both of these are meant to be used once to create the file. The file should be hand-edited from that point on.
 ** Define function signatures in base classes and ensure that derived classes use the same signature
 ** Inline the args so that you don't have to deep clone them with json.
    - On the other hand, this does let me change run time behaviour easily by updating the source args
@@ -31,5 +33,10 @@
 ** Show abstract base classes with only one child
 ** Shortcut for text substitution as naming conventions are typically strict
    - Alternately support for static checking naming conventions
-** [#C] Make the definitions in a file that are not the first be inaccessible outside that file
-** [#C] Make namespaces for the functions to reduce chance of overlap
+** Check to see if some definitions are very similar to each other
+** Refactor out the line check
+** Refactor the commands
+** Refactor the parseToken
+* Rejected
+** Make the definitions in a file that are not the first be inaccessible outside that file
+** Make namespaces for the functions to reduce chance of overlap
