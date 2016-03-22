@@ -44,7 +44,7 @@ class Ecs(object):
                 try:
                     ecs[key] = ecs[key] + '.concat(' + val + ')'
                 except KeyError:
-                    raise KeyError(key, val)
+                    ecs[key] = val
         self.commandHolders['extend'] = {}
                 
         for group, sdict in self.commandHolders.iteritems():
