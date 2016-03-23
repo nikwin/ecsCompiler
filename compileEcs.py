@@ -162,7 +162,8 @@ def compileEcs():
         for lin in f.xreadlines():
             if shouldReset:
                 ecs = {
-                    'ecsKey': '"%s"'%(fil)
+                    'ecsKey': '"%s"'%(fil),
+                    'args': 'args'
                 }
                 isQuoting = False
                 inherits = []
