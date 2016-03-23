@@ -5,6 +5,8 @@
 ** Add support for a step to process the csv files
    - Minimize the towerbutton file from that
    - Also towerSource
+   - Rename the bcsv files into csv files
+   - Make .gen_csv files that get .csv files ignored by the compiler
 ** Write a check to ensure uniqueness of keys
    - Also list the pieces that are not referenced by other pieces
    - Also uniqueness of defined functions would be nice.
