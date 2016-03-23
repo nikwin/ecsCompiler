@@ -161,7 +161,9 @@ def compileEcs():
         shouldReset = True
         for lin in f.xreadlines():
             if shouldReset:
-                ecs = {}
+                ecs = {
+                    'ecsKey': '"%s"'%(fil)
+                }
                 isQuoting = False
                 inherits = []
                 commandHolders = {}
