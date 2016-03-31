@@ -38,7 +38,7 @@
 ** Check to see if some definitions are very similar to each other
 ** Refactor out the line check
 ** Refactor the commands
-** Refactor the parseToken
+** DONE Refactor the parseToken
 * Rejected
 ** Make the definitions in a file that are not the first be inaccessible outside that file
 ** Make namespaces for the functions to reduce chance of overlap

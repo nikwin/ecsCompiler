@@ -4,6 +4,7 @@ import json
 import csv
 
 from parseCsv import parseCsvToken
+from parseToken import parseToken
 
 def indent(definition, baseIndent):
     definition = definition.split('\n')
@@ -103,50 +104,7 @@ class ArgWrapperEcs(object):
     def getArg(self):
         return self.arg
 
-def makeEcsRef(ref):
-    return 'ecs.{0}(args)'.format(ref)
-
-def parseToken(token, key):
-    if token == '#':
-        return key
-    if token[0] == '#':
-        return token[1:]
-    if token == '()':
-        return makeEcsRef(key)
-    if token in ['true', 'false']:
-        return token
-    try:
-        return int(token)
-    except ValueError:
-        pass
-
-    try:
-        return float(token)
-    except ValueError:
-        pass
-
-    if token[0] == '[':
-        st = token[1:-1]
-        return '[{0}]'.format(', '.join(str(parseToken(s.strip(), key)) for s in st.split(',')))  if st else '[]'
-
-    if token[0] == '?':
-        token = token[1:]
-        mat = re.match('\((.+)\) (.*)', token)
-        if mat:
-            condition, token = mat.groups()
-            return '({0}) ? {1} : undefined'.format(condition, parseToken(token, key))
-        else:
-            return '(args["{0}"] === undefined) ? {1} : args["{0}"]'.format(key, parseToken(token, key))
-
-    if token[0] == '"':
-        return token
-
-    mat = re.match('(.+)\(\)', token)
-    if mat:
-        return makeEcsRef(mat.group(1))
-    else:
-        return "args['{0}']".format(token)
-
+    
 def getFilesInEcsFolder(ext):
     for folder, _, files in os.walk('ecs'):
         for fil in files:
@@ -154,7 +112,7 @@ def getFilesInEcsFolder(ext):
                 with open(os.path.join(folder, fil)) as f:
                     yield os.path.splitext(fil)[0], f
 
-def compileEcs():
+def compileEcs(templateFolder):
     quotedLines = []
     rawEcs = {}
     for fil, f in getFilesInEcsFolder('.ecs'):
@@ -197,7 +155,7 @@ def compileEcs():
                         if group == 'arg':
                             val = parseCsvToken(val)
                         elif group == 'extend':
-                            val = parseToken(val, key)
+                            val = parseToken(val, key).valToInsert()
 
                         if not group in commandHolders:
                             commandHolders[group] = {}
@@ -208,8 +166,7 @@ def compileEcs():
                         key, val = mat.groups()
                     except AttributeError:
                         raise AttributeError(lin)
-                    val = val if val else key
-                    ecs[key] = parseToken(val, key)
+                    ecs[key] = parseToken(val, key).valToInsert()
                         
         rawEcs[fil] = Ecs(ecs, inherits, commandHolders)
 
@@ -246,54 +203,18 @@ def compileEcs():
     ecsList = ',\n'.join('    {0}: {1}'.format(key, val) for key, val in allEcs.iteritems())
     
                  
-    ecsDefinition = """var PARAMETERS = {parameters};
+    with open(os.path.join(templateFolder, 'fileTemplate.js')) as templateFile:
+        template = templateFile.read()
 
-var allArgs = {allArgs};
-
-var ecs = {{
-{ecsList}
-}};
-
-{quotedLines}
-
-var csvIdentifiers = {csvIdentifiers}
-
-var findKeyFor = function(csvId, key, val){{
-    return _.chain(csvIdentifiers[csvId])
-    .filter(function(argKey){{
-        return (allArgs[argKey][key] == val);
-    }})
-    .first()
-    .value();
-}};
-
-var updateArgs = function(args, defaultArgs){{
-    _.each(defaultArgs, function(val, key){{
-        if (args[key] !== undefined){{
-            console.log('overlapping value ' + key + ' ' + val);
-        }}
-        args[key] = val;
-    }});
-}};
-
-var makeEcs = function(key, args){{
-    args = (args === undefined) ? {{}} : args;
-    if (ecs[key] === undefined){{
-        console.log('tried to build ' + key);
-    }}
-    return ecs[key](args);
-}};
-
-var makeAllEcs = function(csvId){{
-    return _.map(csvIdentifiers[csvId], function(key){{
-        return makeEcs(key, {{}});
-    }});
-}};
-""".format(parameters=json.dumps(parameters, indent=4),
+    ecsDefinition = template.format(parameters=json.dumps(parameters, indent=4),
            allArgs=json.dumps(allArgs, indent=4), 
            ecsList=ecsList, 
            quotedLines=''.join(quotedLines), 
            csvIdentifiers=json.dumps(csvIdentifiers, indent=4))
     print ecsDefinition
-        
-compileEcs()
+
+
+if __name__ == '__main__':
+    import sys
+    baseFolder = os.path.split(sys.argv[0])[0]
+    compileEcs(os.path.join(baseFolder, 'templates'))
