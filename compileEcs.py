@@ -105,17 +105,18 @@ class ArgWrapperEcs(object):
         return self.arg
 
     
-def getFilesInEcsFolder(ext):
+def getFilesInEcsFolder(ext, subFolder):
     for folder, _, files in os.walk('ecs'):
-        for fil in files:
-            if os.path.splitext(fil)[1] == ext:
-                with open(os.path.join(folder, fil)) as f:
-                    yield os.path.splitext(fil)[0], f
+        if folder == 'ecs' or os.path.normpath(folder) == os.path.normpath(subFolder):
+            for fil in files:
+                if os.path.splitext(fil)[1] == ext:
+                    with open(os.path.join(folder, fil)) as f:
+                        yield os.path.splitext(fil)[0], f
 
-def compileEcs(templateFolder):
+def compileEcs(templateFolder, subFolder):
     quotedLines = []
     rawEcs = {}
-    for fil, f in getFilesInEcsFolder('.ecs'):
+    for fil, f in getFilesInEcsFolder('.ecs', subFolder):
         shouldReset = True
         for lin in f.xreadlines():
             if shouldReset:
@@ -177,7 +178,7 @@ def compileEcs(templateFolder):
             chk = ecs.reduce(rawEcs) and chk
 
     csvIdentifiers = {}
-    for fil, f in getFilesInEcsFolder('.csv'):
+    for fil, f in getFilesInEcsFolder('.csv', subFolder):
         csvKeys = []
         for i, row in enumerate(csv.reader(f)):
             if i == 0:
@@ -217,4 +218,9 @@ def compileEcs(templateFolder):
 if __name__ == '__main__':
     import sys
     baseFolder = os.path.split(sys.argv[0])[0]
-    compileEcs(os.path.join(baseFolder, 'templates'))
+    subFolder = None
+    try:
+        subFolder = sys.argv[1]
+    except IndexError:
+        pass
+    compileEcs(os.path.join(baseFolder, 'templates'), subFolder)
