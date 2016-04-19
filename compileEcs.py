@@ -113,6 +113,24 @@ def getFilesInEcsFolder(ext, subFolder):
                     with open(os.path.join(folder, fil)) as f:
                         yield os.path.splitext(fil)[0], f
 
+def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
+    csvKeys = []
+    for i, row in enumerate(csv.reader(f)):
+        if i == 0:
+            keys = row
+        else:
+            tokens = [parseCsvToken(token) for token in row]
+            defaultArgs = { key: token for key, token in zip(keys, tokens) if token is not None }
+            key = defaultArgs['key']
+            template = defaultArgs['template'] if 'template' in defaultArgs else fil
+            if key in rawEcs:
+                rawEcs[key].updateArgs(defaultArgs)
+            else:
+                rawEcs[key] = ArgWrapperEcs(template, defaultArgs)
+            csvKeys.append(key)
+    csvIdentifiers[fil] = csvKeys
+    
+
 def compileEcs(templateFolder, subFolder):
     quotedLines = []
     rawEcs = {}
@@ -178,22 +196,13 @@ def compileEcs(templateFolder, subFolder):
             chk = ecs.reduce(rawEcs) and chk
 
     csvIdentifiers = {}
+    
+    for fil, f in getFilesInEcsFolder('.gen_csv', subFolder):
+        addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers)
+    
     for fil, f in getFilesInEcsFolder('.csv', subFolder):
-        csvKeys = []
-        for i, row in enumerate(csv.reader(f)):
-            if i == 0:
-                keys = row
-            else:
-                tokens = [parseCsvToken(token) for token in row]
-                defaultArgs = { key: token for key, token in zip(keys, tokens) if token is not None }
-                key = defaultArgs['key']
-                template = defaultArgs['template'] if 'template' in defaultArgs else fil
-                if key in rawEcs:
-                    rawEcs[key].updateArgs(defaultArgs)
-                else:
-                    rawEcs[key] = ArgWrapperEcs(template, defaultArgs)
-                csvKeys.append(key)
-        csvIdentifiers[fil] = csvKeys
+        if not fil in csvIdentifiers:
+            addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers)
 
     parameters = rawEcs['PARAMETERS'].commandHolders['arg']
     del rawEcs['PARAMETERS']
