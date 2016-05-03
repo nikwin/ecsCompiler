@@ -16,6 +16,9 @@ def indent(definition, baseIndent):
 def defaultArgDefinition(key):
     return """updateArgs(args, JSON.parse(JSON.stringify(allArgs.{0})));""".format(key)
 
+class EcsException(Exception):
+    pass
+
 class Ecs(object):
     def __init__(self, ecs, inherits, commandHolders):
         self.ecs = ecs
@@ -124,7 +127,10 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
             key = defaultArgs['key']
             template = defaultArgs['template'] if 'template' in defaultArgs else fil
             if key in rawEcs:
-                rawEcs[key].updateArgs(defaultArgs)
+                try:
+                    rawEcs[key].updateArgs(defaultArgs)
+                except AttributeError:
+                    raise EcsException('Duplicate key ' + key)
             else:
                 rawEcs[key] = ArgWrapperEcs(template, defaultArgs)
             csvKeys.append(key)
