@@ -28,8 +28,22 @@ var updateArgs = function(args, defaultArgs){{
     }});
 }};
 
+var uidManager = (function(){{
+    var uid = 0;
+    return {{
+        getUid: function(){{
+            uid += 1;
+            return uid;
+        }},
+        setUid: function(newUid){{
+            uid = newUid;
+        }}
+    }};
+}})();
+
 var makeEcs = function(key, args){{
     args = (args === undefined) ? {{}} : args;
+    args.uid = uidManager.getUid();
     if (ecs[key] === undefined){{
         console.log('tried to build ' + key);
     }}
