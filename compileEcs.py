@@ -20,9 +20,10 @@ class EcsException(Exception):
     pass
 
 class Ecs(object):
-    def __init__(self, ecs, inherits, commandHolders):
+    def __init__(self, ecs, inherits, asserts, commandHolders):
         self.ecs = ecs
         self.inherits = inherits
+        self.asserts = asserts
         self.commandHolders = commandHolders
     def reduce(self, rawEcs):
         ecs = {}
@@ -74,16 +75,19 @@ class Ecs(object):
         else:
             deriveText = ''
 
+        assertText = ''.join('\n{indent}if (args.{0} === undefined){{ throw "ECS fail"; }}'.format(val, indent = '    ') for val in self.asserts)
+        
+
         if 'default' in self.commandHolders:
             defaultText = ''.join('\n{indent}args["{0}"] = (args["{0}"] === undefined) ? {1} : args["{0}"];'.format(key, val, indent='    ') for key, val in self.commandHolders['default'].iteritems())
         else:
             defaultText = ''
         
-        definition = """function(args){{{0}{1}{2}
+        definition = """function(args){{{0}{1}{2}{3}
     return {{
 {ecsSet}
     }};
-}}""".format(('\n    ' + defaultArgDefinition(ecsKey)) if self.getArg() else '', deriveText, defaultText, ecsSet=ecsSet)
+}}""".format(('\n    ' + defaultArgDefinition(ecsKey)) if self.getArg() else '', deriveText, defaultText, assertText, ecsSet=ecsSet)
         return indent(definition, baseIndent)
     def getArg(self):
         return self.commandHolders['arg'] if 'arg' in self.commandHolders else None
@@ -150,6 +154,7 @@ def compileEcs(templateFolder, subFolder):
                 }
                 isQuoting = False
                 inherits = []
+                asserts = []
                 commandHolders = {}
                 shouldReset = False
             
@@ -159,7 +164,7 @@ def compileEcs(templateFolder, subFolder):
             elif isQuoting:
                 quotedLines.append(lin)
             elif lin[:3] == '---':
-                rawEcs[fil] = Ecs(ecs, inherits, commandHolders)
+                rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders)
                 fil = lin[3:].strip()
                 shouldReset = True
             else:
@@ -170,6 +175,8 @@ def compileEcs(templateFolder, subFolder):
                     group = mat.group(1)
                     if group == 'inherit':
                         inherits.append(mat.group(2))
+                    elif group == 'assert':
+                        asserts.append(mat.group(2))
                     else:
                         if group not in ['arg', 'derive', 'default', 'refer', 'extend']:
                             print 'incorrect instruction', fil
@@ -193,7 +200,7 @@ def compileEcs(templateFolder, subFolder):
                         raise AttributeError(lin)
                     ecs[key] = parseToken(val, key).valToInsert()
                         
-        rawEcs[fil] = Ecs(ecs, inherits, commandHolders)
+        rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders)
 
     chk = False
     while not chk:
