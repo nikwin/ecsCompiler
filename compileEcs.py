@@ -181,8 +181,11 @@ def compileEcs(templateFolder, subFolder):
                         if group not in ['arg', 'derive', 'default', 'refer', 'extend']:
                             print 'incorrect instruction', fil
                         mat2 = re.match('(.+?) (.+)', mat.group(2))
-                        key = mat2.group(1)
-                        val = mat2.group(2)
+                        try:
+                            key = mat2.group(1)
+                            val = mat2.group(2)
+                        except AttributeError:
+                            raise AttributeError(lin)
 
                         if group == 'arg':
                             val = parseCsvToken(val)
