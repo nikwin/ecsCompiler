@@ -75,7 +75,7 @@ class Ecs(object):
         else:
             deriveText = ''
 
-        assertText = ''.join('\n{indent}if (args.{0} === undefined){{ throw "ECS fail " + args.key; }}'.format(val, indent = '    ') for val in self.asserts)
+        assertText = ''.join('\n{indent}if (args.{0} === undefined){{ throw "ECS fail " + args.key + " missing {0}"; }}'.format(val, indent = '    ') for val in self.asserts)
         
 
         if 'default' in self.commandHolders:
