@@ -126,9 +126,14 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
         if i == 0:
             keys = row
         else:
+            if not row:
+                continue
             tokens = [parseCsvToken(token) for token in row]
             defaultArgs = { key: token for key, token in zip(keys, tokens) if token is not None }
-            key = defaultArgs['key']
+            try:
+                key = defaultArgs['key']
+            except KeyError:
+                raise EcsException('No key in ' + fil)
             template = defaultArgs['template'] if 'template' in defaultArgs else fil
             if key in rawEcs:
                 try:
