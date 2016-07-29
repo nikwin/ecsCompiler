@@ -3,6 +3,8 @@ import re
 import json
 import csv
 
+import pyparsing
+
 from parseCsv import parseCsvToken
 from parseToken import parseToken
 
@@ -128,7 +130,11 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
         else:
             if not row:
                 continue
-            tokens = [parseCsvToken(token) for token in row]
+            try:
+                tokens = [parseCsvToken(token) for token in row]
+            except pyparsing.ParseException as e:
+                print 'csv parse failure in ' + fil
+                raise e
             defaultArgs = { key: token for key, token in zip(keys, tokens) if token is not None }
             try:
                 key = defaultArgs['key']
