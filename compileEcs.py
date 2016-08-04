@@ -152,7 +152,7 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
     csvIdentifiers[fil] = csvKeys
     
 
-def compileEcs(templateFolder, subFolder):
+def compileEcs(templateFolder, subFolder, oFile):
     quotedLines = []
     rawEcs = {}
     for fil, f in getFilesInEcsFolder('.ecs', subFolder):
@@ -248,15 +248,16 @@ def compileEcs(templateFolder, subFolder):
            ecsList=ecsList, 
            quotedLines=''.join(quotedLines), 
            csvIdentifiers=json.dumps(csvIdentifiers, indent=4))
-    print ecsDefinition
+
+    with open(oFile, 'w') as op:
+        op.write(ecsDefinition)
 
 
 if __name__ == '__main__':
     import sys
-    baseFolder = os.path.split(sys.argv[0])[0]
-    subFolder = None
-    try:
-        subFolder = sys.argv[1]
-    except IndexError:
-        pass
-    compileEcs(os.path.join(baseFolder, 'templates'), subFolder)
+    
+    subFolder = sys.argv[1]
+    templateFolder = sys.argv[2]
+    oFile = sys.argv[3]
+
+    compileEcs(templateFolder, subFolder, oFile)
