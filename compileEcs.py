@@ -155,14 +155,18 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
 def compileEcs(templateFolder, subFolder, oFile):
     quotedLines = []
     rawEcs = {}
+
+    baseEcs = []
+    with open(os.path.join(templateFolder, 'ecsTemplate')) as ecsTemplateFil:
+        for lin in ecsTemplateFil.xreadlines():
+            baseEcs.append([e.strip() for e in lin.split(':')])
+            
+
     for fil, f in getFilesInEcsFolder('.ecs', subFolder):
         shouldReset = True
         for lin in f.xreadlines():
             if shouldReset:
-                ecs = {
-                    'ecsKey': '"%s"'%(fil),
-                    'args': 'args'
-                }
+                ecs = {key: val.format(fil=fil) for key, val in baseEcs}
                 isQuoting = False
                 inherits = []
                 asserts = []
