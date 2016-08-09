@@ -1,8 +1,8 @@
 import pyparsing as pp
 
-def parseCsvToken(st):
-    if st == '':
-        return None
+result = None
+
+def makeCsvTokenParser():
     num = pp.Combine(pp.Optional('-') + pp.Word(pp.nums))
     num.setParseAction(lambda toks: int(toks[0]))
 
@@ -37,7 +37,19 @@ def parseCsvToken(st):
     dct << pp.Group(pp.dictOf(dctKey, dctVal))
     dct.setParseAction(lambda toks: {key: simplify(val, True) for key, val in toks[0]})
     
+    global result
     result = basicToken ^ lst ^ dct
+    
+
+def parseCsvToken(st):
+    if st == '':
+        return None
+
+    global result
+
+    if not result:
+        makeCsvTokenParser()
+    
     try:
         parseResult = result.parseString(st, parseAll=True)
     except (pp.ParseException, ValueError) as e:
