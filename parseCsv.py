@@ -9,7 +9,7 @@ def makeCsvTokenParser():
     floatNum = pp.Combine(pp.Optional('-') + pp.Word(pp.nums) + '.' + pp.Word(pp.nums))
     floatNum.setParseAction(lambda toks: float(toks[0]))
     
-    identifier = pp.Word(pp.alphanums + ' -_.?')
+    identifier = pp.Word(pp.alphanums + " -_.?'")
     basicToken = num ^ floatNum ^ identifier
 
     lst = pp.Forward()
@@ -78,4 +78,4 @@ if __name__ == '__main__':
     assert(parseCsvToken('abc:(12|a)|xyz:2') == {'abc': [12, 'a'], 'xyz': 2})
     assert(parseCsvToken('abc:(a:12)') == {'abc': {'a': 12}})
     assert(parseCsvToken('(a:2)|3') == [{'a': 2}, 3])
-    
+    assert(parseCsvToken('a:that and this|b:this and that') == {'a': 'that and this', 'b': 'this and that'})
