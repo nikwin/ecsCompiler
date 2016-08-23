@@ -22,16 +22,20 @@ class EcsException(Exception):
     pass
 
 class Ecs(object):
-    def __init__(self, ecs, inherits, asserts, commandHolders):
+    def __init__(self, ecs, inherits, asserts, commandHolders, key):
         self.ecs = ecs
         self.inherits = inherits
         self.asserts = asserts
         self.commandHolders = commandHolders
+        self.key = key
     def reduce(self, rawEcs):
         ecs = {}
         commandHolders = {}
         for base in self.inherits:
-            base = rawEcs[base]
+            try:
+                base = rawEcs[base]
+            except KeyError:
+                raise EcsException('{} could not inherit from {}'.format(self.key, base))
             if len(base.inherits) > 0:
                 return False
             for key, val in base.ecs.iteritems():
@@ -179,7 +183,7 @@ def compileEcs(templateFolder, subFolder, oFile):
             elif isQuoting:
                 quotedLines.append(lin)
             elif lin[:3] == '---':
-                rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders)
+                rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
                 fil = lin[3:].strip()
                 shouldReset = True
             else:
@@ -218,7 +222,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                         raise AttributeError(lin)
                     ecs[key] = parseToken(val, key).valToInsert()
                         
-        rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders)
+        rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
 
     chk = False
     while not chk:
