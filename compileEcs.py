@@ -220,7 +220,15 @@ def compileEcs(templateFolder, subFolder, oFile):
                         key, val = mat.groups()
                     except AttributeError:
                         raise AttributeError(lin)
-                    ecs[key] = parseToken(val, key).valToInsert()
+                    parsed = parseToken(val, key)
+                    ecs[key] = parsed.valToInsert()
+                    
+                    try:
+                        newAssert = parsed.getAsserts()
+                        asserts.append(newAssert)
+                    except AttributeError:
+                        pass
+                    
                         
         rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
 

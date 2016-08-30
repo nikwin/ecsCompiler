@@ -142,6 +142,9 @@ class BlankParse(DefaultParse):
     
     def __init__(self, token, key):
         self.argKey = key
+
+    def getAsserts(self):
+        return self.argKey
         
 def parseToken(token, key):
     parsers = (
