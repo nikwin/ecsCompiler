@@ -9,7 +9,7 @@ def makeCsvTokenParser():
     floatNum = pp.Combine(pp.Optional('-') + pp.Word(pp.nums) + '.' + pp.Word(pp.nums))
     floatNum.setParseAction(lambda toks: float(toks[0]))
     
-    identifier = pp.Word(pp.alphanums + " -_.?'>+,")
+    identifier = pp.Word(pp.alphanums + " -_.?'>+,!")
     basicToken = num ^ floatNum ^ identifier
 
     lst = pp.Forward()
