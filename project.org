@@ -40,6 +40,8 @@
 ** Check to see if some definitions are very similar to each other
 ** Refactor out the line check
 ** Refactor the commands
+** Support being able to define the functions directly.
+** Make a tool that shows you the arguments that an ecs object can take.
 * Rejected
 ** Make the definitions in a file that are not the first be inaccessible outside that file
 ** Make namespaces for the functions to reduce chance of overlap
