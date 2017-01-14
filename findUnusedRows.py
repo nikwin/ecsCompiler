@@ -20,11 +20,13 @@ def checkFolder(foldername):
         elif type(token) == list:
             foundKeys.update(token)
                         
+    keysForFil = {}
+
 
     for fil in files:
         ext = os.path.splitext(fil)[1]
         path = os.path.join(foldername, fil)
-
+        
         if ext == '.ecs':
             with open(path) as f:
                 for lin in f.xreadlines():
@@ -39,12 +41,15 @@ def checkFolder(foldername):
         elif ext != '.gen_csv':
             continue
         
+        keysForFil[fil] = []
+
         with open(path) as f:
             for i, row in enumerate(csv.reader(f)):
                 if i == 0:
                     continue
                 for j, part in enumerate(row):
                     if j == 0:
+                        keysForFil[fil].append(part)
                         allKeys.add(part)
                     else:
                         if ' ' not in part:
@@ -52,11 +57,18 @@ def checkFolder(foldername):
 
     unusedKeys = allKeys.difference(foundKeys)
     missingKeys = foundKeys.difference(allKeys)
+
+    missingKeysForFil = {fil: [key for key in keys if key in unusedKeys] for fil, keys in keysForFil.iteritems()}
+    missingKeysForFil = {fil: keys for fil, keys in missingKeysForFil.iteritems() if keys}
+    
+    for fil, keys in missingKeysForFil.iteritems():
+        print '%s - %d / %d'%(fil, len(keys), len(keysForFil[fil]))
+        for key in keys:
+            print '  ' + key
+
     return unusedKeys, missingKeys
 
 if __name__ == '__main__':
     folder = sys.argv[1]
     unusedKeys, missingKeys = checkFolder(folder)
-    print 'Unused Keys:'
-    for key in unusedKeys:
-        print key
+    
