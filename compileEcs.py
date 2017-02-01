@@ -198,7 +198,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                         asserts.append(mat.group(2))
                     else:
                         if group not in ['arg', 'derive', 'default', 'refer', 'extend']:
-                            print 'incorrect instruction', fil
+                            print 'incorrect instruction in', fil, '-', group
                         mat2 = re.match('(.+?) (.+)', mat.group(2))
                         try:
                             key = mat2.group(1)
