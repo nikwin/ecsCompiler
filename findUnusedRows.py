@@ -62,6 +62,8 @@ def checkFolder(foldername):
     missingKeysForFil = {fil: keys for fil, keys in missingKeysForFil.iteritems() if keys}
     
     for fil, keys in missingKeysForFil.iteritems():
+        if len(keys) == len(keysForFil[fil]):
+            continue
         print '%s - %d / %d'%(fil, len(keys), len(keysForFil[fil]))
         for key in keys:
             print '  ' + key
