@@ -6,7 +6,7 @@ def listRows(folder, column):
     pairs = []
     
     for fil in files:
-        ext  = os.path.splitext(fil)[1]
+        ext = os.path.splitext(fil)[1]
         if ext != '.csv':
             continue
                     
