@@ -15,14 +15,18 @@ def checkFolder(foldername, pretty):
     allKeys = set()
     foundKeys = set()
 
-    def addToken(token):
+    def addToken(token, ident):
         token = parseCsvToken(token)
         if type(token) == str:
-            foundKeys.add(token)
+            keys = [token]
         elif type(token) == dict:
-            foundKeys.update(token.keys())
+            keys = token.keys()
         elif type(token) == list:
-            foundKeys.update(token)
+            keys = token
+        else:
+            return
+
+        foundKeys.update(key for key in keys if key != ident)
                         
     keysForFil = {}
 
@@ -36,7 +40,7 @@ def checkFolder(foldername, pretty):
                 for lin in f.xreadlines():
                     mat = re.match('!arg [^ ]+ (.*)', lin)
                     if mat:
-                        addToken(mat.groups()[0])
+                        addToken(mat.groups()[0], False)
             continue
 
         if ext == '.csv':
@@ -51,13 +55,15 @@ def checkFolder(foldername, pretty):
             for i, row in enumerate(csv.reader(f)):
                 if i == 0:
                     continue
+                ident = False
                 for j, part in enumerate(row):
                     if j == 0:
                         keysForFil[fil].append(part)
                         allKeys.add(part)
+                        ident = part
                     else:
                         if ' ' not in part:
-                            addToken(part)
+                            addToken(part, ident)
 
     unusedKeys = allKeys.difference(foundKeys)
     missingKeys = foundKeys.difference(allKeys)
