@@ -1,11 +1,15 @@
 import os
 import re
-import sys
 import csv
 
 from parseCsv import parseCsvToken
 
-def checkFolder(foldername):
+import click
+
+@click.command()
+@click.argument('foldername')
+@click.option('--pretty', is_flag=True)
+def checkFolder(foldername, pretty):
     files = os.listdir(foldername)
 
     allKeys = set()
@@ -58,19 +62,24 @@ def checkFolder(foldername):
     unusedKeys = allKeys.difference(foundKeys)
     missingKeys = foundKeys.difference(allKeys)
 
-    missingKeysForFil = {fil: [key for key in keys if key in unusedKeys] for fil, keys in keysForFil.iteritems()}
-    missingKeysForFil = {fil: keys for fil, keys in missingKeysForFil.iteritems() if keys}
+    missingKeysForFil = ((fil, [key for key in keys if key in unusedKeys]) for fil, keys in keysForFil.iteritems())
+    missingKeysForFil = ((fil, keys) for fil, keys in missingKeysForFil if keys)
     
-    for fil, keys in missingKeysForFil.iteritems():
-        if len(keys) == len(keysForFil[fil]):
-            continue
-        print '%s - %d / %d'%(fil, len(keys), len(keysForFil[fil]))
-        for key in keys:
-            print '  ' + key
+    missingKeysForFil = ((fil, keys) for fil, keys in missingKeysForFil if len(keysForFil[fil]) != len(keys))
+    
+    if pretty:
+        for fil, keys in missingKeysForFil:
+            print '%s - %d / %d'%(fil, len(keys), len(keysForFil[fil]))
+            for key in keys:
+                print '  ' + key
+    else:
+        keysToPrint = []
+        for fil, keys in missingKeysForFil:
+            keysToPrint += keys
+        print ' '.join(keysToPrint)
 
     return unusedKeys, missingKeys
 
 if __name__ == '__main__':
-    folder = sys.argv[1]
-    unusedKeys, missingKeys = checkFolder(folder)
+    checkFolder()
     

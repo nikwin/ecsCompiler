@@ -15,6 +15,7 @@ def deleteKeys(folder, keys):
             with open(os.path.join(folder, fil), 'w') as f:
                 writer = csv.writer(f)
                 writer.writerows(rows)
+    print ' '.join(keys)
 
 if __name__ == '__main__':
     import sys
