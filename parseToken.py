@@ -86,7 +86,7 @@ class ListParse(object):
         self.lst = [parseToken(s.strip(), key) for s in st.split(',')] if st else []
         
     def valToInsert(self):
-        return '[{0}]'.format(', '.join(parsed.valToInsert() for parsed in self.lst))
+        return '[{0}]'.format(', '.join(str(parsed.valToInsert()) for parsed in self.lst))
 
 
 class ConditionParse(object):

@@ -221,7 +221,11 @@ def compileEcs(templateFolder, subFolder, oFile):
                     except AttributeError:
                         raise AttributeError(lin)
                     parsed = parseToken(val, key)
-                    ecs[key] = parsed.valToInsert()
+                    try:
+                        ecs[key] = parsed.valToInsert()
+                    except TypeError as e:
+                        print 'Error parsing - ', lin
+                        raise e
                     
                     try:
                         newAssert = parsed.getAsserts()
