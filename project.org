@@ -1,16 +1,7 @@
 * ECS Debt
-** DONE Support components that only are made if a certain param exists.
-** DONE Global parameter files. 1/1
-** DONE Support extending the arrays of parent classes in an ecs file
-** DONE Refactor the parseToken
 ** Add support for a step to process the csv files
-   - Minimize the towerbutton file from that
-   - Also towerSource
-   - Rename the bcsv files into csv files
-   - Make .gen_csv files that get .csv files ignored by the compiler
-** Write a check to ensure uniqueness of keys
-   - Also list the pieces that are not referenced by other pieces
-   - Also uniqueness of defined functions would be nice.
+** Also list the defined classes that are not referenced by other pieces
+** Also uniqueness of defined functions would be nice.
 ** Support adding arguments to the components in the ecs files
    - ie; healthComponent(health=1)
    - refactor the goal entity through that.
@@ -18,7 +9,6 @@
 ** Check to ensure that a value belongs to a certain class
    - eg; check to make sure that sourceKey is actually a source
 ** Similarly to extending lists, support decorating the function of the parent class.
-** Check to make sure that all of the identifiers are used
 ** Auto-generate csv columns from an ecs file
    - support a dynamic keyword so that you can mark fields in the ecs file that should not show up in the csv
    - Also try the other way around - generate the ecs file from the csv by figuring out columns and put all new columns into a new component
@@ -42,6 +32,12 @@
 ** Refactor the commands
 ** Support being able to define the functions directly.
 ** Make a tool that shows you the arguments that an ecs object can take.
+** DONE Support components that only are made if a certain param exists.
+** DONE Global parameter files. 1/1
+** DONE Support extending the arrays of parent classes in an ecs file
+** DONE Refactor the parseToken
+** DONE Write a check to ensure uniqueness of keys
+** DONE Check to make sure that all of the identifiers are used
 * Rejected
 ** Make the definitions in a file that are not the first be inaccessible outside that file
 ** Make namespaces for the functions to reduce chance of overlap
