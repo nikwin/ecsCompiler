@@ -33,6 +33,7 @@
 ** Support being able to define the functions directly.
 ** Make a tool that shows you the arguments that an ecs object can take.
 ** Be able to auto-generate gen_csv rows by having something of a particular key format be referred to by something else.
+** Static check to make sure that you don't refer to anything that doesn't exist in the CSVs.
 ** DONE Support components that only are made if a certain param exists.
 ** DONE Global parameter files. 1/1
 ** DONE Support extending the arrays of parent classes in an ecs file
