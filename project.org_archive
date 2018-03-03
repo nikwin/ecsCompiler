@@ -1,0 +1,18 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /Users/nikhilmurthy/Desktop/syph/ecsCompiler/project.org
+
+
+* Debt
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2018-03-03 Sat 13:02
+  :ARCHIVE_FILE: ~/Desktop/syph/ecsCompiler/project.org
+  :ARCHIVE_CATEGORY: project
+  :END:
+** DONE Support components that only are made if a certain param exists.
+** DONE Global parameter files. 1/1
+** DONE Support extending the arrays of parent classes in an ecs file
+** DONE Refactor the parseToken
+** DONE Write a check to ensure uniqueness of keys
+** DONE Check to make sure that all of the identifiers are used
