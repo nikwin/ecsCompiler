@@ -188,7 +188,9 @@ def compileEcs(templateFolder, subFolder, oFile):
                 oldFil = fil
                 fil = lin[3:].strip()
 
-                if '~' in fil:
+                if fil == '~':
+                    fil = baseFil + 'Component'
+                elif '~' in fil:
                     fil = baseFil + fil[1].upper() + fil[2:]
 
                 shouldReset = True
@@ -221,11 +223,22 @@ def compileEcs(templateFolder, subFolder, oFile):
                             commandHolders[group] = {}
                         commandHolders[group][key] = val
                 else:
-                    try:
-                        mat = re.match('(\w+): ?(.*)', lin)
-                        key, val = mat.groups()
-                    except AttributeError:
-                        raise AttributeError(lin)
+                    if lin[0] == '~':
+                        key, val = lin.split(':')
+                        key = key.strip()
+                        val = val.strip()
+                        
+                        if key == '~':
+                            key = baseFil + 'Component'
+                        else:
+                            key = baseFil + key[1].upper() + key[2:]
+                    else:
+                        try:
+                            mat = re.match('(\w+): ?(.*)', lin)
+                            key, val = mat.groups()
+                        except AttributeError:
+                            raise AttributeError(lin)
+                    
                     parsed = parseToken(val, key, fil)
                     try:
                         ecs[key] = parsed.valToInsert()
