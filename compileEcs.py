@@ -167,6 +167,7 @@ def compileEcs(templateFolder, subFolder, oFile):
             
 
     for fil, f in getFilesInEcsFolder('.ecs', subFolder):
+        baseFil = fil
         shouldReset = True
         for lin in f.xreadlines():
             if shouldReset:
@@ -184,7 +185,12 @@ def compileEcs(templateFolder, subFolder, oFile):
                 quotedLines.append(lin)
             elif lin[:3] == '---':
                 rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
+                oldFil = fil
                 fil = lin[3:].strip()
+
+                if '~' in fil:
+                    fil = baseFil + fil[1].upper() + fil[2:]
+
                 shouldReset = True
             else:
                 if not lin.strip():
