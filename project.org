@@ -1,5 +1,5 @@
 * Top Priority
-** TODO The shortcut for class-specific components
+** DONE The shortcut for class-specific components 4/4T
 ** TODO Function thing that automatically figures out the name
 ** By making the params into a different file, I can dramatically speed up build times in many cases.
 ** Also uniqueness of defined functions would be nice.
