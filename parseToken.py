@@ -12,7 +12,7 @@ class HashParse(SimpleParse):
     def canParse(token):
         return token[0] == '#'
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         super(HashParse, self).__init__(token[1:])
         
 class KeyHashParse(SimpleParse):
@@ -20,7 +20,7 @@ class KeyHashParse(SimpleParse):
     def canParse(token):
         return token == '#'
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         super(KeyHashParse, self).__init__(key)
         
 class EcsRef(object):
@@ -29,7 +29,7 @@ class EcsRef(object):
     def canParse(cls, token):
         return re.match(cls.ecsRegex, token)
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         mat = re.match(self.ecsRegex, token)
         self.ecsRef = mat.group(1)
 
@@ -41,7 +41,7 @@ class KeyEcsRef(EcsRef):
     def canParse(token):
         return token == '()'
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         self.ecsRef = key
 
 class BoolParse(SimpleParse):
@@ -49,7 +49,7 @@ class BoolParse(SimpleParse):
     def canParse(token):
         return token in ('true', 'false')
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         super(BoolParse, self).__init__(token)
 
 class IntParse(SimpleParse):
@@ -61,7 +61,7 @@ class IntParse(SimpleParse):
         except ValueError:
             return False
 
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         super(IntParse, self).__init__(int(token))
 
 class FloatParse(SimpleParse):
@@ -73,7 +73,7 @@ class FloatParse(SimpleParse):
         except ValueError:
             return False
 
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         super(FloatParse, self).__init__(float(token))
 
 class ListParse(object):
@@ -81,9 +81,9 @@ class ListParse(object):
     def canParse(token):
         return token[0] == '['
 
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         st = token[1:-1]
-        self.lst = [parseToken(s.strip(), key) for s in st.split(',')] if st else []
+        self.lst = [parseToken(s.strip(), key, fil) for s in st.split(',')] if st else []
         
     def valToInsert(self):
         return '[{0}]'.format(', '.join(str(parsed.valToInsert()) for parsed in self.lst))
@@ -95,11 +95,11 @@ class ConditionParse(object):
     def canParse(cls, token):
         return re.match(cls.conditionRegex, token)
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         mat = re.match(self.conditionRegex, token)
         groups = mat.groups()
         self.condition = groups[0]
-        self.token = parseToken(groups[1], key)
+        self.token = parseToken(groups[1], key, fil)
 
     def valToInsert(self):
         return '({0}) ? {1} : undefined'.format(self.condition, self.token.valToInsert())
@@ -109,9 +109,9 @@ class CheckDefaultParse(object):
     def canParse(token):
         return token[0] == '?'
 
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         self.key = key
-        self.token = parseToken(token[1:], key)
+        self.token = parseToken(token[1:], key, fil)
         
     def valToInsert(self):
         return '(args["{0}"] === undefined) ? {1} : args["{0}"]'.format(self.key, self.token.valToInsert())
@@ -121,7 +121,7 @@ class StringParse(SimpleParse):
     def canParse(token):
         return token[0] == '"'
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         super(StringParse, self).__init__(token)
 
 class DefaultParse(object):
@@ -129,7 +129,7 @@ class DefaultParse(object):
     def canParse(token):
         return True
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         self.argKey = token
 
     def valToInsert(self):
@@ -140,13 +140,34 @@ class BlankParse(DefaultParse):
     def canParse(token):
         return not token
     
-    def __init__(self, token, key):
+    def __init__(self, token, key, fil):
         self.argKey = key
 
     def getAsserts(self):
         return self.argKey
-        
-def parseToken(token, key):
+
+class TildeParse(EcsRef):
+    tildeRegex = '~(.+)\(\)'
+    
+    @classmethod
+    def canParse(cls, token):
+        return re.match(cls.tildeRegex, token)
+
+    def __init__(self, token, key, fil):
+        mat = re.match(self.tildeRegex, token)
+        baseClass = mat.group(1)
+        self.ecsRef = fil + baseClass[0].upper() + baseClass[1:]
+
+class OnlyTildeParse(EcsRef):
+    @staticmethod
+    def canParse(token):
+        return token == '~()'
+
+    def __init__(self, token, key, fil):
+        self.ecsRef = fil + key[0].upper() + key[1:]
+
+    
+def parseToken(token, key, fil):
     parsers = (
         BlankParse,
         KeyHashParse, 
@@ -159,10 +180,12 @@ def parseToken(token, key):
         ConditionParse,
         CheckDefaultParse,
         StringParse,
+        OnlyTildeParse,
+        TildeParse,
         EcsRef,
         DefaultParse
     )
     for parser in parsers:
         if parser.canParse(token):
-            return parser(token, key)
+            return parser(token, key, fil)
     return None

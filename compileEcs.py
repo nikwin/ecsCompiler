@@ -209,7 +209,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                         if group == 'arg':
                             val = parseCsvToken(val)
                         elif group == 'extend':
-                            val = parseToken(val, key).valToInsert()
+                            val = parseToken(val, key, fil).valToInsert()
 
                         if not group in commandHolders:
                             commandHolders[group] = {}
@@ -220,7 +220,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                         key, val = mat.groups()
                     except AttributeError:
                         raise AttributeError(lin)
-                    parsed = parseToken(val, key)
+                    parsed = parseToken(val, key, fil)
                     try:
                         ecs[key] = parsed.valToInsert()
                     except TypeError as e:
