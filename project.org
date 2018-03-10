@@ -1,6 +1,6 @@
 * Top Priority
 ** DONE The shortcut for class-specific components 4/4T
-** TODO Function thing that automatically figures out the name
+** DONE Function thing that automatically figures out the name
 ** By making the params into a different file, I can dramatically speed up build times in many cases.
 ** Also uniqueness of defined functions would be nice.
 ** Also list the defined classes that are not referenced by other pieces

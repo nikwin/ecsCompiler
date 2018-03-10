@@ -177,12 +177,16 @@ def compileEcs(templateFolder, subFolder, oFile):
                 asserts = []
                 commandHolders = {}
                 shouldReset = False
+                inFunction = False
             
             if lin.strip() == '#':
                 isQuoting = not isQuoting
                 quotedLines.append('\n')
             elif isQuoting:
                 quotedLines.append(lin)
+            elif inFunction:
+                quotedLines.append(lin)
+                inFunction = lin != '};\n'
             elif lin[:3] == '---':
                 rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
                 oldFil = fil
@@ -238,19 +242,27 @@ def compileEcs(templateFolder, subFolder, oFile):
                             key, val = mat.groups()
                         except AttributeError:
                             raise AttributeError(lin)
-                    
-                    parsed = parseToken(val, key, fil)
-                    try:
-                        ecs[key] = parsed.valToInsert()
-                    except TypeError as e:
-                        print 'Error parsing - ', lin
-                        raise e
-                    
-                    try:
-                        newAssert = parsed.getAsserts()
-                        asserts.append(newAssert)
-                    except AttributeError:
-                        pass
+
+                    if 'function' in val:
+                        inFunction = True
+                        
+                        fnName = fil + '_' + key
+                        ecs[key] = fnName
+                        quotedLines.append('var {} = {}\n'.format(fnName, val))
+                        
+                    else:
+                        parsed = parseToken(val, key, fil)
+                        try:
+                            ecs[key] = parsed.valToInsert()
+                        except TypeError as e:
+                            print 'Error parsing - ', lin
+                            raise e
+                        
+                        try:
+                            newAssert = parsed.getAsserts()
+                            asserts.append(newAssert)
+                        except AttributeError:
+                            pass
                     
                         
         rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
