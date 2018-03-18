@@ -44,13 +44,13 @@ class KeyEcsRef(EcsRef):
     def __init__(self, token, key, fil):
         self.ecsRef = key
 
-class BoolParse(SimpleParse):
+class KeywordParse(SimpleParse):
     @staticmethod
     def canParse(token):
-        return token in ('true', 'false')
+        return token in ('true', 'false', 'undefined')
     
     def __init__(self, token, key, fil):
-        super(BoolParse, self).__init__(token)
+        super(KeywordParse, self).__init__(token)
 
 class IntParse(SimpleParse):
     @staticmethod
@@ -173,7 +173,7 @@ def parseToken(token, key, fil):
         KeyHashParse, 
         HashParse, 
         KeyEcsRef, 
-        BoolParse, 
+        KeywordParse, 
         IntParse,
         FloatParse,
         ListParse,
