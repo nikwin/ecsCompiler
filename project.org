@@ -1,9 +1,14 @@
 * Top Priority
 ** DONE The shortcut for class-specific components 4/4T
 ** DONE Function thing that automatically figures out the name
-** Make a shortcut for the xComponent: ~() + --- ~xComponent. Make it something like ~~~ in the file to do both
+** DONE Also uniqueness of defined functions would be nice.
+** TODO Make a shortcut for the xComponent: ~() + --- ~xComponent. Make it something like ~~~ in the file to do both
+** TODO Be able to make ad-hoc subclassese through csvs alone
+   - ie; imagine a csv called unitOption_settler.csv
+   - This should take the class here as unitOption, thus saving me the need of making an ecs file unitOption_settler.ecs
+   - This way I can still separate the csvs as I want without making a bunch of largely blank ecs files.
+** TODO Similarly to extending lists, support decorating the function of the parent class.
 ** By making the params into a different file, I can dramatically speed up build times in many cases.
-** Also uniqueness of defined functions would be nice.
 ** Also list the defined classes that are not referenced by other pieces
 ** Static check to make sure that you don't refer to anything that doesn't exist in the CSVs.
 ** Inline the args so that you don't have to deep clone them with json.
@@ -19,7 +24,6 @@
 ** Check to ensure that a value belongs to a certain class
    - eg; check to make sure that sourceKey is actually a source
    - Maybe you can do this at the csv level.
-** Similarly to extending lists, support decorating the function of the parent class.
 ** Auto-generate csv columns from an ecs file
    - support a dynamic keyword so that you can mark fields in the ecs file that should not show up in the csv
    - Also try the other way around - generate the ecs file from the csv by figuring out columns and put all new columns into a new component
