@@ -144,7 +144,7 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
                 key = defaultArgs['key']
             except KeyError:
                 raise EcsException('No key in ' + fil)
-            template = defaultArgs['template'] if 'template' in defaultArgs else fil
+            template = defaultArgs['template'] if 'template' in defaultArgs else fil.split('_')[0]
             if key in rawEcs:
                 try:
                     rawEcs[key].updateArgs(defaultArgs)

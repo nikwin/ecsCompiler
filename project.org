@@ -3,7 +3,8 @@
 ** DONE Function thing that automatically figures out the name
 ** DONE Also uniqueness of defined functions would be nice.
 ** TODO Make a shortcut for the xComponent: ~() + --- ~xComponent. Make it something like ~~~ in the file to do both
-** TODO Be able to make ad-hoc subclassese through csvs alone
+** DONE Be able to make ad-hoc subclassese through csvs alone /2T
+   DEADLINE: <2018-11-20 Tue>
    - ie; imagine a csv called unitOption_settler.csv
    - This should take the class here as unitOption, thus saving me the need of making an ecs file unitOption_settler.ecs
    - This way I can still separate the csvs as I want without making a bunch of largely blank ecs files.
