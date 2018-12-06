@@ -36,6 +36,10 @@ class EcsRef(object):
     def valToInsert(self):
         return 'ecs.{0}(args)'.format(self.ecsRef)
 
+class DirectEcsRef(EcsRef):
+    def __init__(self, ecsRef):
+        self.ecsRef = ecsRef
+        
 class KeyEcsRef(EcsRef):
     @staticmethod
     def canParse(token):

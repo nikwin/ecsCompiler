@@ -6,7 +6,7 @@ import csv
 import pyparsing
 
 from parseCsv import parseCsvToken
-from parseToken import parseToken
+from parseToken import parseToken, DirectEcsRef
 
 def indent(definition, baseIndent):
     definition = definition.split('\n')
@@ -169,6 +169,7 @@ def compileEcs(templateFolder, subFolder, oFile):
     for fil, f in getFilesInEcsFolder('.ecs', subFolder):
         baseFil = fil
         shouldReset = True
+        fileEcs = None
         for lin in f.xreadlines():
             if shouldReset:
                 ecs = {key: val.format(fil=fil) for key, val in baseEcs}
@@ -189,13 +190,27 @@ def compileEcs(templateFolder, subFolder, oFile):
                 inFunction = lin != '};\n'
             elif lin[:3] == '---':
                 rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
-                oldFil = fil
+
+                if not fileEcs:
+                    fileEcs = rawEcs[fil]
+
                 fil = lin[3:].strip()
+                
+                fil = fil.split(' ')
+                commands = fil[1:]
+                fil = fil[0]
+                key = fil
 
                 if fil == '~':
                     fil = baseFil + 'Component'
+                    key = fil
                 elif '~' in fil:
+                    key = fil[1:]
                     fil = baseFil + fil[1].upper() + fil[2:]
+                
+                if not '!noset' in commands and key not in fileEcs.ecs:
+                    ecsRef = DirectEcsRef(fil)
+                    fileEcs.ecs[key] = ecsRef.valToInsert()
 
                 shouldReset = True
             else:

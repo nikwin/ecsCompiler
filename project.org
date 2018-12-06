@@ -2,7 +2,8 @@
 ** DONE The shortcut for class-specific components 4/4T
 ** DONE Function thing that automatically figures out the name
 ** DONE Also uniqueness of defined functions would be nice.
-** TODO Make a shortcut for the xComponent: ~() + --- ~xComponent. Make it something like ~~~ in the file to do both
+** DONE Make a shortcut for the xComponent: ~() + --- ~xComponent. Make it something like ~~~ in the file to do both
+   DEADLINE: <2018-12-06 Thu>
 ** DONE Be able to make ad-hoc subclassese through csvs alone /2T
    DEADLINE: <2018-11-20 Tue>
    - ie; imagine a csv called unitOption_settler.csv
