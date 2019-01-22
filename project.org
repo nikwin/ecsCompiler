@@ -10,6 +10,7 @@
    - This should take the class here as unitOption, thus saving me the need of making an ecs file unitOption_settler.ecs
    - This way I can still separate the csvs as I want without making a bunch of largely blank ecs files.
 ** TODO Similarly to extending lists, support decorating the function of the parent class.
+** TODO Support conditionals in the component signature in ecs files.
 ** By making the params into a different file, I can dramatically speed up build times in many cases.
 ** Also list the defined classes that are not referenced by other pieces
 ** Static check to make sure that you don't refer to anything that doesn't exist in the CSVs.
