@@ -46,7 +46,7 @@ class DirectConditionEcs(object):
         self.ecsRef = ecsRef
 
     def valToInsert(self):
-        return '({}) ? ecs.{} : undefined'.format(self.condition, self.ecsRef)
+        return '{} ? ecs.{} : undefined'.format(self.condition, self.ecsRef)
         
 class KeyEcsRef(EcsRef):
     @staticmethod
