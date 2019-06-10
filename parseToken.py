@@ -39,6 +39,14 @@ class EcsRef(object):
 class DirectEcsRef(EcsRef):
     def __init__(self, ecsRef):
         self.ecsRef = ecsRef
+
+class DirectConditionEcs(object):
+    def __init__(self, condition, ecsRef):
+        self.condition = condition
+        self.ecsRef = ecsRef
+
+    def valToInsert(self):
+        return '({}) ? ecs.{} : undefined'.format(self.condition, self.ecsRef)
         
 class KeyEcsRef(EcsRef):
     @staticmethod
@@ -90,7 +98,7 @@ class ListParse(object):
         self.lst = [parseToken(s.strip(), key, fil) for s in st.split(',')] if st else []
         
     def valToInsert(self):
-        return '[{0}]'.format(', '.join(str(parsed.valToInsert()) for parsed in self.lst))
+        return '[{}]'.format(', '.join(str(parsed.valToInsert()) for parsed in self.lst))
 
 
 class ConditionParse(object):
@@ -106,7 +114,7 @@ class ConditionParse(object):
         self.token = parseToken(groups[1], key, fil)
 
     def valToInsert(self):
-        return '({0}) ? {1} : undefined'.format(self.condition, self.token.valToInsert())
+        return '({}) ? {} : undefined'.format(self.condition, self.token.valToInsert())
 
 class CheckDefaultParse(object):
     @staticmethod

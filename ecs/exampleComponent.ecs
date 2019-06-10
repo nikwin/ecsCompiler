@@ -17,7 +17,7 @@ Dictionaries are specified by key1:val1|key2:val2...
 In both cases, a val can be a list or a dictionary as well as a primitive.
 Those are specified by using the above syntax wrapped in () where a val would be used.
 
-- Run python compileEcs.py > ecs.js
+- Run python compileEcs.py ecs templates ecs.js
 from the root folder and then open ecs.js to see the compiled version
 */
 #
@@ -30,3 +30,7 @@ basicComponent: basicComponent()
 basicExample: ()
 defaultField: ?3
 objField: #{}
+
+--- ~checkLine ?(args.check)
+
+check:
