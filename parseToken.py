@@ -34,7 +34,7 @@ class EcsRef(object):
         self.ecsRef = mat.group(1)
 
     def valToInsert(self):
-        return 'ecs.{0}(args)'.format(self.ecsRef)
+        return 'ecs.{}(args)'.format(self.ecsRef)
 
 class DirectEcsRef(EcsRef):
     def __init__(self, ecsRef):
@@ -46,7 +46,7 @@ class DirectConditionEcs(object):
         self.ecsRef = ecsRef
 
     def valToInsert(self):
-        return '{} ? ecs.{} : undefined'.format(self.condition, self.ecsRef)
+        return '{} ? ecs.{}(args) : undefined'.format(self.condition, self.ecsRef)
         
 class KeyEcsRef(EcsRef):
     @staticmethod
