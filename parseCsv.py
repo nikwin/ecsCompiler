@@ -63,19 +63,41 @@ def simplify(parseResult, index):
     else:
         return parseResult.asList()[0] if index else parseResult.asList()
 
+def tokenToString(token, wrap=False):
+    if token == None:
+        return ''
+    if type(token) == list:
+        st = '|'.join(tokenToString(ele, True) for ele in token)
+        if len(token) == 1:
+            st += '|'
+    elif type(token) == dict:
+        items = token.items()
+        items.sort(key = lambda ele: ele[0])
+        st = '|'.join('{}:{}'.format(key, tokenToString(val, True)) for key, val in items)
+    else:
+        return str(token)
+
+    return '({})'.format(st) if wrap else st
+                
 if __name__ == '__main__':
-    assert(parseCsvToken('') == None)
-    assert(parseCsvToken('12') == 12)
-    assert(parseCsvToken('-3') == -3)
-    assert(parseCsvToken('0.5') == 0.5)
-    assert(parseCsvToken('abc') == 'abc')
-    assert(parseCsvToken('abc def') == 'abc def')
-    assert(parseCsvToken('a.b-c') == 'a.b-c')
-    assert(parseCsvToken('abc|') == ['abc'])
-    assert(parseCsvToken('abc|12|sxy') == ['abc', 12, 'sxy'])
-    assert(parseCsvToken('abc:12') == {'abc': 12})
-    assert(parseCsvToken('abc:12|xyz:2') == {'abc': 12, 'xyz': 2})
-    assert(parseCsvToken('abc:(12|a)|xyz:2') == {'abc': [12, 'a'], 'xyz': 2})
-    assert(parseCsvToken('abc:(a:12)') == {'abc': {'a': 12}})
-    assert(parseCsvToken('(a:2)|3') == [{'a': 2}, 3])
-    assert(parseCsvToken('a:that and this|b:this and that') == {'a': 'that and this', 'b': 'this and that'})
+    chks = (
+        ('', None),
+        ('12', 12),
+        ('-3', -3),
+        ('0.5', 0.5),
+        ('abc', 'abc'),
+        ('abc def', 'abc def'),
+        ('a.b-c', 'a.b-c'),
+        ('abc|', ['abc']),
+        ('abc|12|sxy', ['abc', 12, 'sxy']),
+        ('abc:12', {'abc': 12}),
+        ('abc:12|xyz:2', {'abc': 12, 'xyz': 2}),
+        ('abc:(12|a)|xyz:2', {'abc': [12, 'a'], 'xyz': 2}),
+        ('abc:(a:12)', {'abc': {'a': 12}}),
+        ('(a:2)|3', [{'a': 2}, 3]),
+        ('a:that and this|b:this and that', {'a': 'that and this', 'b': 'this and that'}),
+    )
+
+    for token, chk in chks:
+        assert(parseCsvToken(token) == chk)
+        assert(tokenToString(parseCsvToken(token)) == token)

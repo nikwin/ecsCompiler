@@ -9,7 +9,7 @@
    - ie; imagine a csv called unitOption_settler.csv
    - This should take the class here as unitOption, thus saving me the need of making an ecs file unitOption_settler.ecs
    - This way I can still separate the csvs as I want without making a bunch of largely blank ecs files.
-** TODO Similarly to extending lists, support decorating the function of the parent class.
+** Similarly to extending lists, support decorating the function of the parent class.
 ** DONE Support conditionals in the component signature in ecs files. /3D
    DEADLINE: <2019-06-10 Mon>
 ** Automatic inheritance for components when possible
