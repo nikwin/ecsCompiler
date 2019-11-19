@@ -78,7 +78,7 @@ def tokenToString(token, wrap=False):
         return str(token)
 
     return '({})'.format(st) if wrap else st
-                
+
 if __name__ == '__main__':
     chks = (
         ('', None),

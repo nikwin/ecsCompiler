@@ -18,8 +18,11 @@
    - Resolve this when resolving the inheritance
      - Check through the parent classes to see if there is a subclass to inherit from
      - Check to see if there is a class with the base name of the component to inherit from
-** TODO By making the params into a different file, I can dramatically speed up build times in many cases. /4D
+** DONE By making the params into a different file, I can dramatically speed up build times in many cases. 6/4D
    DEADLINE: <2019-11-19 Tue>
+   - [X] Separate out the csv parsing into a different function
+   - [X] Figure out how to tie the pieces together
+   - [X] Update the makefile
 ** Also list the defined classes that are not referenced by other pieces
 ** Static check to make sure that you don't refer to anything that doesn't exist in the CSVs.
 ** Inline the args so that you don't have to deep clone them with json.
