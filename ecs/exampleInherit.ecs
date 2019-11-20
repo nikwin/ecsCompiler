@@ -1,0 +1,5 @@
+!inherit exampleComponent
+
+--- ~checkLine
+
+check2: 3

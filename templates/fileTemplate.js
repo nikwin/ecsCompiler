@@ -1,14 +1,12 @@
-var PARAMETERS = {parameters};
-
-var allArgs = {allArgs};
+var PARAMETERS = {{
+{parameters}
+}};
 
 var ecs = {{
 {ecsList}
 }};
 
 {quotedLines}
-
-var csvIdentifiers = {csvIdentifiers};
 
 var findKeyFor = function(csvId, key, val){{
     return _.chain(csvIdentifiers[csvId])

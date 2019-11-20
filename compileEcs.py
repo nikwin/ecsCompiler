@@ -11,43 +11,79 @@ from parseToken import parseToken, DirectEcsRef, DirectConditionEcs
 from compileBase import *
 
 class Ecs(object):
-    def __init__(self, ecs, inherits, asserts, commandHolders, key):
+    def __init__(self, ecs, inherits, asserts, commandHolders, key, calcInherit):
         self.ecs = ecs
         self.inherits = inherits
         self.asserts = asserts
         self.commandHolders = commandHolders
         self.key = key
-    def reduce(self, rawEcs):
-        ecs = {}
-        commandHolders = {}
-        for base in self.inherits:
+        self.calcInherit = calcInherit
+        self.resolved = False
+        self.inheritTable = {}
+    
+    def canResolve(self, rawEcs):
+        checks = self.inherits[:]
+        
+        if self.calcInherit:
+            checks.append(self.calcInherit[0])
+
+        for check in checks:
             try:
-                base = rawEcs[base]
+                check = rawEcs[check]
+                if not check.resolved:
+                    return False
             except KeyError:
                 raise EcsException('{} could not inherit from {}'.format(self.key, base))
-            if len(base.inherits) > 0:
-                return False
+            
+        return True
+
+    def resolve(self, rawEcs):
+        if self.resolved:
+            return True
+
+        if not self.canResolve(rawEcs):
+            return False
+
+        ecs = {}
+        commandHolders = {}
+
+        if self.calcInherit: #calculate the default class to inherit from
+            base = rawEcs[self.calcInherit[0]]
+            inheritKey = self.calcInherit[1]
+            
+            if inheritKey in base.inheritTable:
+                self.inherits = [base.inheritTable[inheritKey]] + self.inherits
+            elif inheritKey in rawEcs:
+                self.inherits = [inheritKey] + self.inherits
+            
+        for base in self.inherits: #resolve inheritance
+            base = rawEcs[base]
             for key, val in base.ecs.iteritems():
                 ecs[key] = val
+                
+                try:
+                    match = re.search('ecs\.(.*)\(args\)', val)
+                    if match:
+                        self.inheritTable[key] = match.group(1)
+                except TypeError:
+                    pass
             for group, sdict in base.commandHolders.iteritems():
                 if group not in commandHolders:
                     commandHolders[group] = {}
                 for key, val in sdict.iteritems():
                     commandHolders[group][key] = val
-        self.inherits = []
 
-        for key, val in self.ecs.iteritems():
+        for key, val in self.ecs.iteritems(): #overwrite inherited values with defined values
             ecs[key] = val
 
-        if 'extend' in self.commandHolders:
+        if 'extend' in self.commandHolders: #extend inherited lists
             for key, val in self.commandHolders['extend'].iteritems():
                 try:
                     ecs[key] = ecs[key] + '.concat(' + val + ')'
                 except KeyError:
                     ecs[key] = val
-        self.commandHolders['extend'] = {}
                 
-        for group, sdict in self.commandHolders.iteritems():
+        for group, sdict in self.commandHolders.iteritems(): #overwrite inherited commands with defined commands
             if group not in commandHolders:
                 commandHolders[group] = {}
             for key, val in sdict.iteritems():
@@ -55,7 +91,9 @@ class Ecs(object):
 
         self.ecs = ecs
         self.commandHolders = commandHolders
+        self.resolved = True
         return True
+
     def makeFunction(self, ecsKey, baseIndent):
         ecsSet = ',\n'.join('        {0}: {1}'.format(key, val) for key, val in self.ecs.iteritems())
 
@@ -64,6 +102,7 @@ class Ecs(object):
         if 'refer' in self.commandHolders:
             if 'derive' not in self.commandHolders:
                 self.commandHolders['derive'] = {}
+            
             for key, val in self.commandHolders['refer'].iteritems():
                 self.commandHolders['derive'][key] = 'allArgs[args["{0}"]].{1}'.format(val, key)
 
@@ -109,6 +148,7 @@ def compileEcs(templateFolder, subFolder, oFile):
         baseFil = fil
         shouldReset = True
         fileEcs = None
+        calcInherit = False
         for lin in f.xreadlines():
             if shouldReset:
                 ecs = {key: val.format(fil=fil) for key, val in baseEcs}
@@ -118,7 +158,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                 commandHolders = {}
                 shouldReset = False
                 inFunction = False
-            
+                
             if lin.strip() == '#':
                 isQuoting = not isQuoting
                 quotedLines.append('\n')
@@ -128,7 +168,8 @@ def compileEcs(templateFolder, subFolder, oFile):
                 quotedLines.append(lin)
                 inFunction = lin != '};\n'
             elif lin[:3] == '---':
-                rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
+                rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil, calcInherit)
+                calcInherit = False
 
                 if not fileEcs:
                     fileEcs = rawEcs[fil]
@@ -146,6 +187,10 @@ def compileEcs(templateFolder, subFolder, oFile):
                 elif '~' in fil:
                     key = fil[1:]
                     fil = baseFil + fil[1].upper() + fil[2:]
+                    calcInherit = [baseFil, key]
+                                        
+                if '!noautoinherit' in commands:
+                    calcInherit = False
                 
                 if key not in fileEcs.ecs and not '!noset' in commands:
                     condition = next((command for command in commands if command[0] == '?'), None)
@@ -169,7 +214,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                         asserts.append(mat.group(2))
                     else:
                         if group not in ['arg', 'derive', 'default', 'refer', 'extend']:
-                            print 'incorrect instruction in', fil, '-', group
+                            raise EcsException('Incorrect instruction in', fil, '-', group)
                         mat2 = re.match('(.+?) (.+)', mat.group(2))
                         try:
                             key = mat2.group(1)
@@ -227,13 +272,13 @@ def compileEcs(templateFolder, subFolder, oFile):
                             pass
                     
                         
-        rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil)
+        rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil, calcInherit)
 
     chk = False
     while not chk:
         chk = True
         for ecs in rawEcs.values():
-            chk = ecs.reduce(rawEcs) and chk
+            chk = ecs.resolve(rawEcs) and chk
 
     parameters = rawEcs['PARAMETERS'].commandHolders['derive']
     del rawEcs['PARAMETERS']
