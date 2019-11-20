@@ -33,7 +33,7 @@ class Ecs(object):
                 if not check.resolved:
                     return False
             except KeyError:
-                raise EcsException('{} could not inherit from {}'.format(self.key, base))
+                raise EcsException('{} could not inherit from {}'.format(self.key, check))
             
         return True
 
