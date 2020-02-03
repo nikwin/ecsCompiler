@@ -11,7 +11,6 @@
    - This way I can still separate the csvs as I want without making a bunch of largely blank ecs files.
 ** DONE Support conditionals in the component signature in ecs files. /3D
    DEADLINE: <2019-06-10 Mon>
-** Similarly to extending lists, support decorating the function of the parent class.
 ** DONE Automatic inheritance for components when possible 4/2D
    DEADLINE: <2019-11-20 Wed>
    - [X] Resolve this when resolving the inheritance
@@ -26,12 +25,20 @@
    - [X] Separate out the csv parsing into a different function
    - [X] Figure out how to tie the pieces together
    - [X] Update the makefile
-** Also list the defined classes that are not referenced by other pieces
+** TODO Make the .. thing in the compiler that auto-expands the component
+   - Be able to do x..y and then check through all of the components for y and replace with x.component.y
+** TODO Also make macro definitions
+** TODO Make a reference to all of the parameters the object takes.
+  - Use this to verify csv headers.
+  - Use this to minimize the size of the save files by stripping all the superfluous parameters.
 ** Static check to make sure that you don't refer to anything that doesn't exist in the CSVs.
+** Similarly to extending lists, support decorating the function of the parent class.
+** Also list the defined classes that are not referenced by other pieces
 ** Inline the args so that you don't have to deep clone them with json.
    - On the other hand, this does let me change run time behaviour easily by updating the source args
    - I really don't like that though
 ** Be able to add conditionals to a component and have it return undefined if they are not all met.
+
 * Debt
 ** Add support for a step to process the csv files
 ** Support adding arguments to the components in the ecs files
