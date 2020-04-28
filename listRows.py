@@ -34,10 +34,10 @@ def listRows(foldername, columns, flatten):
         for pair in pairs:
             for ele in pair[1:]:
                 elements.append(ele)
-        print ' '.join(elements)
+        print(' '.join(elements))
     else:
         for pair in pairs:
-            print ','.join(pair)
+            print(','.join(pair))
 
 if __name__ == '__main__':
     listRows()

@@ -31,7 +31,7 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
             try:
                 tokens = [parseCsvToken(token) for token in row]
             except pyparsing.ParseException as e:
-                print 'csv parse failure in ' + fil
+                print('csv parse failure in ' + fil)
                 raise e
             defaultArgs = {key: token for key, token in zip(keys, tokens) if token is not None}
             try:
@@ -59,9 +59,9 @@ def compileCsv(templateFolder, subFolder, oFile):
         if not fil in csvIdentifiers:
             addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers)
 
-    allArgs = {key: raw.getArg() for key, raw in rawEcs.iteritems()}
+    allArgs = {key: raw.getArg() for key, raw in rawEcs.items()}
 
-    ecsList = ',\n'.join('    {}: {}'.format(key, raw.makeFunction(key, '    ')) for key, raw in rawEcs.iteritems())
+    ecsList = ',\n'.join('    {}: {}'.format(key, raw.makeFunction(key, '    ')) for key, raw in rawEcs.items())
     
     with open(os.path.join(templateFolder, 'csvFileTemplate.js')) as templateFile:
         template = templateFile.read()

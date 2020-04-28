@@ -53,7 +53,7 @@ def parseCsvToken(st):
     try:
         parseResult = result.parseString(st, parseAll=True)
     except (pp.ParseException, ValueError) as e:
-        print st
+        print(st)
         raise e
     return simplify(parseResult[0], False)
 

@@ -37,7 +37,7 @@ def checkFolder(foldername, pretty):
         
         if ext == '.ecs':
             with open(path) as f:
-                for lin in f.xreadlines():
+                for lin in f.readlines():
                     mat = re.match('!arg [^ ]+ (.*)', lin)
                     if mat:
                         addToken(mat.groups()[0], False)
@@ -68,21 +68,21 @@ def checkFolder(foldername, pretty):
     unusedKeys = allKeys.difference(foundKeys)
     missingKeys = foundKeys.difference(allKeys)
 
-    missingKeysForFil = ((fil, [key for key in keys if key in unusedKeys]) for fil, keys in keysForFil.iteritems())
+    missingKeysForFil = ((fil, [key for key in keys if key in unusedKeys]) for fil, keys in keysForFil.items())
     missingKeysForFil = ((fil, keys) for fil, keys in missingKeysForFil if keys)
     
     missingKeysForFil = ((fil, keys) for fil, keys in missingKeysForFil if len(keysForFil[fil]) != len(keys))
     
     if pretty:
         for fil, keys in missingKeysForFil:
-            print '%s - %d / %d'%(fil, len(keys), len(keysForFil[fil]))
+            print('{} - {} / {}'.format(fil, len(keys), len(keysForFil[fil])))
             for key in keys:
-                print '  ' + key
+                print('  ' + key)
     else:
         keysToPrint = []
         for fil, keys in missingKeysForFil:
             keysToPrint += keys
-        print ' '.join(keysToPrint)
+        print(' '.join(keysToPrint))
 
     return unusedKeys, missingKeys
 

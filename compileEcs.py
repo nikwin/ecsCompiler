@@ -58,7 +58,7 @@ class Ecs(object):
             
         for base in self.inherits: #resolve inheritance
             base = rawEcs[base]
-            for key, val in base.ecs.iteritems():
+            for key, val in base.ecs.items():
                 ecs[key] = val
                 
                 try:
@@ -67,26 +67,26 @@ class Ecs(object):
                         self.inheritTable[key] = match.group(1)
                 except TypeError:
                     pass
-            for group, sdict in base.commandHolders.iteritems():
+            for group, sdict in base.commandHolders.items():
                 if group not in commandHolders:
                     commandHolders[group] = {}
-                for key, val in sdict.iteritems():
+                for key, val in sdict.items():
                     commandHolders[group][key] = val
 
-        for key, val in self.ecs.iteritems(): #overwrite inherited values with defined values
+        for key, val in self.ecs.items(): #overwrite inherited values with defined values
             ecs[key] = val
 
         if 'extend' in self.commandHolders: #extend inherited lists
-            for key, val in self.commandHolders['extend'].iteritems():
+            for key, val in self.commandHolders['extend'].items():
                 try:
                     ecs[key] = ecs[key] + '.concat(' + val + ')'
                 except KeyError:
                     ecs[key] = val
                 
-        for group, sdict in self.commandHolders.iteritems(): #overwrite inherited commands with defined commands
+        for group, sdict in self.commandHolders.items(): #overwrite inherited commands with defined commands
             if group not in commandHolders:
                 commandHolders[group] = {}
-            for key, val in sdict.iteritems():
+            for key, val in sdict.items():
                 commandHolders[group][key] = val
 
         self.ecs = ecs
@@ -95,7 +95,7 @@ class Ecs(object):
         return True
 
     def makeFunction(self, ecsKey, baseIndent):
-        ecsSet = ',\n'.join('        {0}: {1}'.format(key, val) for key, val in self.ecs.iteritems())
+        ecsSet = ',\n'.join('        {0}: {1}'.format(key, val) for key, val in self.ecs.items())
 
         commandLines = []
 
@@ -103,14 +103,14 @@ class Ecs(object):
             if 'derive' not in self.commandHolders:
                 self.commandHolders['derive'] = {}
             
-            for key, val in self.commandHolders['refer'].iteritems():
+            for key, val in self.commandHolders['refer'].items():
                 self.commandHolders['derive'][key] = 'allArgs[args["{0}"]].{1}'.format(val, key)
 
         if 'derive' in self.commandHolders:
-            commandLines += ['args["{0}"] = {1};'.format(key, val) for key, val in self.commandHolders['derive'].iteritems()]
+            commandLines += ['args["{0}"] = {1};'.format(key, val) for key, val in self.commandHolders['derive'].items()]
 
         if 'default' in self.commandHolders:
-            commandLines += ['args["{0}"] = (args["{0}"] === undefined) ? {1} : args["{0}"];'.format(key, val) for key, val in self.commandHolders['default'].iteritems()]
+            commandLines += ['args["{0}"] = (args["{0}"] === undefined) ? {1} : args["{0}"];'.format(key, val) for key, val in self.commandHolders['default'].items()]
             
 
         commandLines += ['if (args.{0} === undefined){{ throw "ECS fail " + args.key + " missing {0}"; }}'.format(val) for val in self.asserts]
@@ -140,7 +140,7 @@ def compileEcs(templateFolder, subFolder, oFile):
 
     baseEcs = []
     with open(os.path.join(templateFolder, 'ecsTemplate')) as ecsTemplateFil:
-        for lin in ecsTemplateFil.xreadlines():
+        for lin in ecsTemplateFil.readlines():
             baseEcs.append([e.strip() for e in lin.split(':')])
             
 
@@ -149,7 +149,7 @@ def compileEcs(templateFolder, subFolder, oFile):
         shouldReset = True
         fileEcs = None
         calcInherit = False
-        for lin in f.xreadlines():
+        for lin in f.readlines():
             if shouldReset:
                 ecs = {key: val.format(fil=fil) for key, val in baseEcs}
                 isQuoting = False
@@ -262,7 +262,7 @@ def compileEcs(templateFolder, subFolder, oFile):
                         try:
                             ecs[key] = parsed.valToInsert()
                         except TypeError as e:
-                            print 'Error parsing - ', lin
+                            print('Error parsing - ', lin)
                             raise e
                         
                         try:
@@ -283,10 +283,10 @@ def compileEcs(templateFolder, subFolder, oFile):
     parameters = rawEcs['PARAMETERS'].commandHolders['derive']
     del rawEcs['PARAMETERS']
     
-    parameters = ',\n'.join('   {}: {}'.format(key, val) for key, val in parameters.iteritems())
+    parameters = ',\n'.join('   {}: {}'.format(key, val) for key, val in parameters.items())
 
-    allEcs = { key: raw.makeFunction(key, '    ') for key, raw in rawEcs.iteritems() }
-    ecsList = ',\n'.join('    {0}: {1}'.format(key, val) for key, val in allEcs.iteritems())
+    allEcs = { key: raw.makeFunction(key, '    ') for key, raw in rawEcs.items() }
+    ecsList = ',\n'.join('    {0}: {1}'.format(key, val) for key, val in allEcs.items())
     
                  
     with open(os.path.join(templateFolder, 'fileTemplate.js')) as templateFile:

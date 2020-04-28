@@ -12,7 +12,7 @@ class UpdateElement():
         if type(ele) == list:
             return tokenToString([self.updateElement(e) for e in ele])
         elif type(ele) == dict:
-            return tokenToString({self.updateElement(key): self.updateElement(val) for key, val in ele.iteritems()})
+            return tokenToString({self.updateElement(key): self.updateElement(val) for key, val in ele.items()})
         elif ele == self.fromToken:
             self.changed = True
             return self.toToken

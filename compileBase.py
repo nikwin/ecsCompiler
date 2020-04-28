@@ -13,7 +13,7 @@ def getFilesInEcsFolder(ext, subFolder):
 
 def indent(definition, baseIndent):
     definition = definition.split('\n')
-    for i in xrange(1, len(definition)):
+    for i in range(1, len(definition)):
         definition[i] = baseIndent + definition[i]
     definition = '\n'.join(definition)
     return definition
