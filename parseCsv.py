@@ -71,7 +71,7 @@ def tokenToString(token, wrap=False):
         if len(token) == 1:
             st += '|'
     elif type(token) == dict:
-        items = token.items()
+        items = list(token.items())
         items.sort(key = lambda ele: ele[0])
         st = '|'.join('{}:{}'.format(key, tokenToString(val, True)) for key, val in items)
     else:
