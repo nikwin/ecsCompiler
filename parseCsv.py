@@ -9,7 +9,7 @@ def makeCsvTokenParser():
     floatNum = pp.Combine(pp.Optional('-') + pp.Word(pp.nums) + '.' + pp.Word(pp.nums))
     floatNum.setParseAction(lambda toks: float(toks[0]))
     
-    identifier = pp.Word(pp.alphanums + " -_.?'>+,![]\";%")
+    identifier = pp.Word(pp.alphanums + " -_.?'>+,![]\";%()")
 
     colonString = pp.Combine(identifier + ': ' + identifier)
 
@@ -18,8 +18,8 @@ def makeCsvTokenParser():
     lst = pp.Forward()
     dct = pp.Forward()
 
-    lparen = pp.Suppress('(')
-    rparen = pp.Suppress(')')
+    lparen = pp.Suppress('{')
+    rparen = pp.Suppress('}')
 
     lstToken = pp.Group(lparen + lst + rparen)
     dctToken = pp.Group(lparen + dct + rparen)
@@ -80,7 +80,7 @@ def tokenToString(token, wrap=False):
     else:
         return str(token)
 
-    return '({})'.format(st) if wrap else st
+    return ('{' + st + '}') if wrap else st
 
 if __name__ == '__main__':
     chks = (
@@ -95,9 +95,9 @@ if __name__ == '__main__':
         ('abc|12|sxy', ['abc', 12, 'sxy']),
         ('abc:12', {'abc': 12}),
         ('abc:12|xyz:2', {'abc': 12, 'xyz': 2}),
-        ('abc:(12|a)|xyz:2', {'abc': [12, 'a'], 'xyz': 2}),
-        ('abc:(a:12)', {'abc': {'a': 12}}),
-        ('(a:2)|3', [{'a': 2}, 3]),
+        ('abc:{12|a}|xyz:2', {'abc': [12, 'a'], 'xyz': 2}),
+        ('abc:{a:12}', {'abc': {'a': 12}}),
+        ('{a:2}|3', [{'a': 2}, 3]),
         ('a:that and this|b:this and that', {'a': 'that and this', 'b': 'this and that'}),
         ('a: b', 'a: b'),
         ('a:b', {'a': 'b'})
