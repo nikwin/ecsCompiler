@@ -13,7 +13,9 @@ def makeCsvTokenParser():
 
     colonString = pp.Combine(identifier + ': ' + identifier)
 
-    basicToken = num ^ floatNum ^ identifier ^ colonString
+    endColon = pp.Combine(identifier + ':')
+
+    basicToken = num ^ floatNum ^ identifier ^ colonString ^ endColon
 
     lst = pp.Forward()
     dct = pp.Forward()
