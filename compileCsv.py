@@ -48,14 +48,14 @@ def addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers):
             csvKeys.append(key)
     csvIdentifiers[fil] = csvKeys
 
-def compileCsv(templateFolder, subFolder, oFile):
+def compileCsv(templateFolder, subFolder, oFile, partition):
     csvIdentifiers = {}
     rawEcs = {}
     
-    for fil, f in getFilesInEcsFolder('.gen_csv', subFolder):
+    for fil, f in getFilesInEcsFolder('.gen_csv', subFolder, partition):
         addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers)
     
-    for fil, f in getFilesInEcsFolder('.csv', subFolder):
+    for fil, f in getFilesInEcsFolder('.csv', subFolder, partition):
         if not fil in csvIdentifiers:
             addCsvFileToEcs(f, fil, rawEcs, csvIdentifiers)
 
@@ -63,12 +63,14 @@ def compileCsv(templateFolder, subFolder, oFile):
 
     ecsList = ',\n'.join('    {}: {}'.format(key, raw.makeFunction(key, '    ')) for key, raw in rawEcs.items())
     
-    with open(os.path.join(templateFolder, 'csvFileTemplate.js')) as templateFile:
+    templatePath = 'partitionFileTemplate.js' if partition else 'csvFileTemplate.js'
+    with open(os.path.join(templateFolder, templatePath)) as templateFile:
         template = templateFile.read()
 
     definition = template.format(ecsList = ecsList,
                                  allArgs = json.dumps(allArgs, indent=4),
-                                 csvIdentifiers = json.dumps(csvIdentifiers, indent=4))
+                                 csvIdentifiers = json.dumps(csvIdentifiers, indent=4),
+                                 subFolder = subFolder)
 
     with open(oFile, 'w') as op:
         op.write(definition)
@@ -78,8 +80,9 @@ def compileCsv(templateFolder, subFolder, oFile):
 @click.argument('templatefolder')
 @click.argument('subfolder')
 @click.argument('ofile')
-def compileCsvWrapper(templatefolder, subfolder, ofile):
-    compileCsv(templatefolder, subfolder, ofile)
+@click.option('--partition', is_flag=True)
+def compileCsvWrapper(templatefolder, subfolder, ofile, partition):
+    compileCsv(templatefolder, subfolder, ofile, partition)
 
 if __name__ == '__main__':
     compileCsvWrapper()
