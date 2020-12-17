@@ -3,7 +3,7 @@ import os
 class EcsException(Exception):
     pass
 
-def getFilesInEcsFolder(ext, subFolder, partition):
+def getFilesInEcsFolder(ext, subFolder, partition=False):
     if partition:
         walk = ((folder, files) for folder, _, files in os.walk(subFolder))
     else:
