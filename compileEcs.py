@@ -27,6 +27,12 @@ class Ecs(object):
         if self.calcInherit:
             checks.append(self.calcInherit[0])
 
+            base = rawEcs[self.calcInherit[0]]
+            if self.calcInherit[1] in base.inheritTable:
+                checks.append(base.inheritTable[self.calcInherit[1]])
+            elif self.calcInherit[1] in rawEcs:
+                checks.append(self.calcInherit[1])
+
         for check in checks:
             try:
                 check = rawEcs[check]
