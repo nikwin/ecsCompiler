@@ -31,6 +31,8 @@
 ** TODO Make a reference to all of the parameters the object takes.
   - Use this to verify csv headers.
   - Use this to minimize the size of the save files by stripping all the superfluous parameters.
+** TODO Spell checking
+** Support JSON instead of CSV
 ** Static check to make sure that you don't refer to anything that doesn't exist in the CSVs.
 ** Similarly to extending lists, support decorating the function of the parent class.
 ** Also list the defined classes that are not referenced by other pieces
