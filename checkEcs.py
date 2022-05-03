@@ -24,24 +24,30 @@ def parseFil(lines, allArgs, allEcs):
             currentArgs += lin
 
 @click.command()
-@click.argument('fils', type=click.File('r'), nargs=-1)
-def checkEcs(fils):
+@click.argument('paramfil', type=click.File('r'))
+def checkEcs(paramfil):
+    params = json.loads(paramfil.read())
+
     allArgs = {}
     allEcs = []
-    for fil in fils:
-        parseFil(fil.readlines(), allArgs, allEcs)
+    for fil in params['files']:
+        with open(fil, 'r') as f:
+            parseFil(f.readlines(), allArgs, allEcs)
 
     for key, arg in allArgs.items():
-        if 'entitiesToMake' in arg:
-            entities = arg['entitiesToMake']
-            if type(entities) == dict:
-                entities = entities.keys()
-            elif type(entities) == str:
-                entities = [entities]
+        for field in params['fields']:
+            if field in arg:
+                entities = arg[field]
+                if type(entities) == dict:
+                    entities = entities.keys()
+                elif type(entities) == str:
+                    entities = [entities]
+                elif entities == 0:
+                    entities = []
             
-            for entity in entities:
-                if not entity in allEcs:
-                    print('{} Missing {}'.format(key, entity))
+                for entity in entities:
+                    if not entity in allEcs:
+                        print('{} Missing {}'.format(key, entity))
 
 if __name__ == '__main__':
     checkEcs()
