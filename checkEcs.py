@@ -34,6 +34,7 @@ def checkEcs(paramfil):
         with open(fil, 'r') as f:
             parseFil(f.readlines(), allArgs, allEcs)
 
+    fail = False
     for key, arg in allArgs.items():
         for field in params['fields']:
             if field in arg:
@@ -48,6 +49,10 @@ def checkEcs(paramfil):
                 for entity in entities:
                     if not entity in allEcs:
                         print('{} Missing {}'.format(key, entity))
+                        fail = True
+                        
+    if fail:
+        raise Exception("Missing Data.")
 
 if __name__ == '__main__':
     checkEcs()
