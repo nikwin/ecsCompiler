@@ -187,13 +187,13 @@ def compileEcs(templateFolder, subFolder, oFile):
                 fil = fil[0]
                 key = fil
 
-                if fil == '~':
+                if fil:
+                    key = fil
+                    fil = baseFil + fil[0].upper() + fil[1:]
+                    calcInherit = [baseFil, key]
+                else:
                     fil = baseFil + 'Component'
                     key = fil
-                elif '~' in fil:
-                    key = fil[1:]
-                    fil = baseFil + fil[1].upper() + fil[2:]
-                    calcInherit = [baseFil, key]
                                         
                 if '!noautoinherit' in commands:
                     calcInherit = False
@@ -280,6 +280,15 @@ def compileEcs(templateFolder, subFolder, oFile):
                         
         rawEcs[fil] = Ecs(ecs, inherits, asserts, commandHolders, fil, calcInherit)
 
+    for fil, f in getFilesInEcsFolder('.enum', subFolder):
+        i = 1
+        component, field = fil.split('_')
+        component = component[0].upper() + component[1:]
+        for lin in f.readlines():
+            for key in lin.strip().split(' '):
+                rawEcs[key + component].ecs[field] = i
+            i += 1
+        
     chk = False
     while not chk:
         chk = True
